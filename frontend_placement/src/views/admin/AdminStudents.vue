@@ -93,7 +93,7 @@
                   <div class="text-muted">{{ selectedStudent.student.usn }} | {{ selectedStudent.student.email }}</div>
                 </div>
                 <div>
-                  <a v-if="selectedStudent.student.resume_filename" :href="`http://localhost:5000/api/files/resume/${selectedStudent.student.resume_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-dark btn-sm">View Resume</a>
+                  <a v-if="selectedStudent.student.resume_filename" :href="`${BASE_URL}/files/resume/${selectedStudent.student.resume_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-dark btn-sm">View Resume</a>
                 </div>
               </div>
 
@@ -158,6 +158,7 @@
 </template>
 
 <script setup>
+import { BASE_URL } from '../../composables/useApi'
 import { ref, onMounted } from 'vue'
 import { useApi } from '../../composables/useApi'
 import { useModal } from '../../composables/useModal'

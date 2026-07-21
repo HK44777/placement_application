@@ -1,7 +1,7 @@
 import { authState, setAuth, clearAuth } from '../store/auth'
 import router from '../router'
 
-const BASE_URL = 'http://localhost:5000/api'
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
 
 export function useApi() {
   /**

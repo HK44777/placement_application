@@ -87,7 +87,7 @@
                 
                 <div class="d-flex gap-2">
                   <button @click="viewDriveDetails(drive.id)" class="btn btn-outline-dark btn-sm flex-fill">View Details</button>
-                  <a v-if="drive.jd_filename" :href="`http://localhost:5000/api/files/jd/${drive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary btn-sm flex-fill">View JD</a>
+                  <a v-if="drive.jd_filename" :href="`${BASE_URL}/files/jd/${drive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary btn-sm flex-fill">View JD</a>
                 </div>
               </div>
             </div>
@@ -119,7 +119,7 @@
                   <div class="text-dark fw-medium">{{ selectedDrive.company_name }}</div>
                 </div>
                 <div>
-                  <a v-if="selectedDrive.jd_filename" :href="`http://localhost:5000/api/files/jd/${selectedDrive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary btn-sm me-2">View JD Document</a>
+                  <a v-if="selectedDrive.jd_filename" :href="`${BASE_URL}/files/jd/${selectedDrive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary btn-sm me-2">View JD Document</a>
                 </div>
               </div>
 
@@ -188,6 +188,7 @@
 </template>
 
 <script setup>
+import { BASE_URL } from '../../composables/useApi'
 import { ref, onMounted } from 'vue'
 import { useApi } from '../../composables/useApi'
 import { useModal } from '../../composables/useModal'

@@ -83,7 +83,7 @@
                 <div class="small text-muted">Uploaded: {{ new Date(resume.created_at).toLocaleDateString() }}</div>
               </div>
               <div>
-                <a :href="`http://localhost:5000/api/files/resume/${resume.file_path}?token=${authState.token}`" target="_blank" class="btn btn-sm btn-outline-secondary me-2">View</a>
+                <a :href="`${BASE_URL}/files/resume/${resume.file_path}?token=${authState.token}`" target="_blank" class="btn btn-sm btn-outline-secondary me-2">View</a>
                 <button @click="promptDelete(resume.id)" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" :disabled="isDeleting === resume.id">
                   <span v-if="isDeleting === resume.id" class="spinner-border spinner-border-sm" role="status"></span>
                   <span v-else>Delete</span>
@@ -142,6 +142,7 @@
 </template>
 
 <script setup>
+import { BASE_URL } from '../../composables/useApi'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useApi } from '../../composables/useApi'

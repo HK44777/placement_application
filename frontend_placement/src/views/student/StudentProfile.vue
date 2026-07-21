@@ -68,7 +68,7 @@
           <div class="col-md-4 fw-semibold text-muted">Resumes</div>
           <div class="col-md-8">
             <div v-if="resumes.length > 0" class="d-flex flex-wrap gap-2">
-              <a v-for="res in resumes" :key="res.id" :href="`http://localhost:5000/api/files/resume/${res.file_path}?token=${authState.token}`" target="_blank" class="btn btn-outline-dark btn-sm d-flex align-items-center gap-1">
+              <a v-for="res in resumes" :key="res.id" :href="`${BASE_URL}/files/resume/${res.file_path}?token=${authState.token}`" target="_blank" class="btn btn-outline-dark btn-sm d-flex align-items-center gap-1">
                 <i class="bi bi-file-earmark-pdf"></i> {{ res.name }}
               </a>
             </div>
@@ -81,6 +81,7 @@
 </template>
 
 <script setup>
+import { BASE_URL } from '../../composables/useApi'
 import { ref, onMounted } from 'vue'
 import { useApi } from '../../composables/useApi'
 import { authState } from '../../store/auth'

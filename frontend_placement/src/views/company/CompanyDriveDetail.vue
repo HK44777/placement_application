@@ -34,7 +34,7 @@
             </div>
           </div>
           <div>
-            <a v-if="drive.jd_filename" :href="`http://localhost:5000/api/files/jd/${drive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary btn-sm me-2">View JD</a>
+            <a v-if="drive.jd_filename" :href="`${BASE_URL}/files/jd/${drive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary btn-sm me-2">View JD</a>
             
             <button v-if="drive.status === 'Open'" @click="closeDrive" class="btn btn-danger btn-sm" :disabled="isClosing">
               {{ isClosing ? 'Closing...' : 'Close Drive Now' }}
@@ -130,7 +130,7 @@
                     </div>
                   </td>
                   <td class="text-end pe-4">
-                    <a v-if="app.resume_filename" :href="`http://localhost:5000/api/files/resume/${app.resume_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary btn-sm me-2">Resume</a>
+                    <a v-if="app.resume_filename" :href="`${BASE_URL}/files/resume/${app.resume_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary btn-sm me-2">Resume</a>
                     
                     <button v-if="app.status !== 'Selected' && app.status !== 'Rejected'" 
                             @click="openManageModal(app)" 
@@ -195,6 +195,7 @@
 </template>
 
 <script setup>
+import { BASE_URL } from '../../composables/useApi'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useApi } from '../../composables/useApi'

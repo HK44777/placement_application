@@ -126,7 +126,7 @@
                 <h5 class="fw-semibold mb-1">{{ drive.title }}</h5>
               </div>
               <div class="d-flex gap-2">
-                <a v-if="drive.jd_filename" :href="`http://localhost:5000/api/files/jd/${drive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary">View JD</a>
+                <a v-if="drive.jd_filename" :href="`${BASE_URL}/files/jd/${drive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary">View JD</a>
                 <router-link :to="`/company/drives/${drive.id}/edit`" class="btn btn-outline-dark">Edit</router-link>
               </div>
             </div>
@@ -147,7 +147,7 @@
                 <small class="text-muted"><i class="bi bi-calendar-event me-1"></i> Open till: <span class="fw-medium text-dark">{{ drive.deadline }}</span></small>
               </div>
               <div class="d-flex align-items-center gap-2">
-                <a v-if="drive.jd_filename" :href="`http://localhost:5000/api/files/jd/${drive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary">View JD</a>
+                <a v-if="drive.jd_filename" :href="`${BASE_URL}/files/jd/${drive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary">View JD</a>
                 <router-link :to="`/company/drives/${drive.id}/edit`" class="btn btn-outline-dark">Edit Timeline</router-link>
                 <router-link :to="`/company/drives/${drive.id}`" class="btn btn-dark px-4">View</router-link>
               </div>
@@ -168,7 +168,7 @@
                 <h5 class="fw-semibold mb-1 text-muted">{{ drive.title }}</h5>
               </div>
               <div class="d-flex gap-2">
-                <a v-if="drive.jd_filename" :href="`http://localhost:5000/api/files/jd/${drive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary">View JD</a>
+                <a v-if="drive.jd_filename" :href="`${BASE_URL}/files/jd/${drive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary">View JD</a>
                 <router-link :to="`/company/drives/${drive.id}`" class="btn btn-dark px-4">Manage Applicants</router-link>
               </div>
             </div>
@@ -188,7 +188,7 @@
                 <h5 class="fw-semibold mb-1">{{ drive.title }}</h5>
               </div>
               <div class="d-flex gap-2">
-                <a v-if="drive.jd_filename" :href="`http://localhost:5000/api/files/jd/${drive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary">View JD</a>
+                <a v-if="drive.jd_filename" :href="`${BASE_URL}/files/jd/${drive.jd_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-secondary">View JD</a>
                 <router-link :to="`/company/drives/${drive.id}/edit`" class="btn btn-outline-dark">Edit & Re-submit</router-link>
               </div>
             </div>
@@ -202,6 +202,7 @@
 </template>
 
 <script setup>
+import { BASE_URL } from '../../composables/useApi'
 import { ref, onMounted, nextTick } from 'vue'
 import { useApi } from '../../composables/useApi'
 import { authState } from '../../store/auth'

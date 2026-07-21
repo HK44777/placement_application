@@ -30,7 +30,7 @@
         <div class="row mb-4">
           <div class="col-md-3 fw-semibold text-muted">Resume Used</div>
           <div class="col-md-9">
-            <a v-if="app.resume_filename" :href="`http://localhost:5000/api/files/resume/${app.resume_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-dark btn-sm">
+            <a v-if="app.resume_filename" :href="`${BASE_URL}/files/resume/${app.resume_filename}?token=${authState.token}`" target="_blank" class="btn btn-outline-dark btn-sm">
               View Resume
             </a>
             <span v-else class="text-muted">Default Profile Resume</span>
@@ -95,6 +95,7 @@
 </template>
 
 <script setup>
+import { BASE_URL } from '../../composables/useApi'
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useApi } from '../../composables/useApi'
