@@ -19,6 +19,7 @@ werkzeug
 sentence-transformers
 PyPDF2
 groq
+requests
 
 # === Frontend Dependencies (npm/package.json) ===
 # The following are npm packages used in the frontend project.
