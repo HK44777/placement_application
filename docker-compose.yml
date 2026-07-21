@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: backend_placement/Dockerfile
+    container_name: web_api
+    working_dir: /app/backend_placement
+    command: uvicorn app:app --host 0.0.0.0 --port 5000 
+    ports:
+      - "80:5000"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    restart: always
+
+  redis:
+    image: redis:alpine
+    container_name: redis_broker
+    ports:
+      - "6379:6379"
+    restart: always
+
+  celery_worker:
+    build: 
+      context: .
+      dockerfile: backend_placement/Dockerfile
+    container_name: celery_worker
+    working_dir: /app/backend_placement
+    command: celery -A celery_app.celery worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    restart: always
+
+  celery_beat:
+    build: 
+      context: .
+      dockerfile: backend_placement/Dockerfile
+    container_name: celery_beat
+    working_dir: /app/backend_placement
+    command: celery -A celery_app.celery beat --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    restart: always

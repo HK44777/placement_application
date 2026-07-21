@@ -12,6 +12,13 @@ redis
 celery
 python-dotenv
 psycopg2-binary
+boto3
+
+# === Missing Dependencies Added ===
+werkzeug
+sentence-transformers
+PyPDF2
+groq
 
 # === Frontend Dependencies (npm/package.json) ===
 # The following are npm packages used in the frontend project.
@@ -26,4 +33,3 @@ psycopg2-binary
 #  - @vitejs/plugin-vue: ^6.0.7
 #  - vite: ^8.0.16
 #  - vite-plugin-vue-devtools: ^8.1.2
-boto3
