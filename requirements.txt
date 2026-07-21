@@ -1,0 +1,28 @@
+# === Backend Dependencies (pip) ===
+fastapi
+uvicorn
+sqlalchemy
+fastapi-mail
+python-multipart
+PyJWT
+pydantic
+email-validator
+pytz
+redis
+celery
+python-dotenv
+psycopg2-binary
+
+# === Frontend Dependencies (npm/package.json) ===
+# The following are npm packages used in the frontend project.
+# They are commented out so this file can still be used safely with `pip install -r requirements.txt`.
+# 
+# Dependencies:
+#  - chart.js: ^4.5.1
+#  - vue: ^3.5.38
+#  - vue-router: ^5.1.0
+#
+# DevDependencies:
+#  - @vitejs/plugin-vue: ^6.0.7
+#  - vite: ^8.0.16
+#  - vite-plugin-vue-devtools: ^8.1.2

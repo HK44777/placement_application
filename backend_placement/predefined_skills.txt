@@ -1,0 +1,72 @@
+Python
+Java
+C++
+C#
+JavaScript
+TypeScript
+SQL
+NoSQL
+HTML
+CSS
+React
+Angular
+Vue.js
+Node.js
+Django
+Flask
+Spring Boot
+AWS
+Azure
+Google Cloud Platform (GCP)
+Docker
+Kubernetes
+Git
+CI/CD
+Machine Learning
+Deep Learning
+Data Analysis
+Pandas
+NumPy
+TensorFlow
+PyTorch
+Natural Language Processing
+Computer Vision
+REST APIs
+GraphQL
+Microservices
+Data Structures
+Algorithms
+System Design
+Cybersecurity
+Linux
+Bash Scripting
+PowerShell
+Ruby
+PHP
+Go
+Rust
+Swift
+Kotlin
+Mobile App Development
+iOS Development
+Android Development
+UI/UX Design
+Figma
+Database Management
+PostgreSQL
+MySQL
+MongoDB
+Redis
+Kafka
+RabbitMQ
+Terraform
+Ansible
+Prometheus
+Grafana
+Spark
+Hadoop
+Tableau
+Power BI
+Data Warehousing
+ETL
+Snowflake

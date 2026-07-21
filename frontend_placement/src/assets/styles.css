@@ -1,0 +1,261 @@
+/* src/assets/styles.css */
+/* Monochrome Custom Theme Overrides for Bootstrap */
+
+/* Typography & Backgrounds */
+body {
+  background-color: #f8f9fa !important;
+  color: #212529 !important;
+}
+
+/* Cards */
+.card {
+  border: 1px solid #e9ecef !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Primary Button (Black) */
+.btn-primary, .btn-dark {
+  background-color: #000000 !important;
+  border-color: #000000 !important;
+  color: #ffffff !important;
+  transition: all 0.2s ease-in-out;
+}
+.btn-primary:hover, .btn-dark:hover, .btn-primary:focus, .btn-dark:focus {
+  background-color: #333333 !important;
+  border-color: #333333 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+}
+.btn-primary:disabled, .btn-dark:disabled {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+/* Outline Dark Button */
+.btn-outline-dark {
+  color: #000000 !important;
+  border-color: #000000 !important;
+}
+.btn-outline-dark:hover {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Navigation & Sidebar */
+.navbar, .sidebar {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e9ecef !important;
+  border-right: 1px solid #e9ecef !important;
+}
+
+/* Inputs */
+.form-control, .form-select {
+  border-radius: 6px !important;
+  border: 1px solid #ced4da !important;
+}
+.form-control:focus, .form-select:focus {
+  border-color: #000000 !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Semantic Badges / Text */
+.bg-success {
+  background-color: #198754 !important;
+  color: #ffffff !important;
+}
+.bg-danger {
+  background-color: #dc3545 !important;
+  color: #ffffff !important;
+}
+.bg-warning {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
+}
+
+.text-success { color: #198754 !important; }
+.text-danger { color: #dc3545 !important; }
+.text-warning { color: #ffc107 !important; }
+
+/* Custom Back Button */
+.back-btn {
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: #6c757d;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+.back-btn:hover {
+  color: #000000;
+}
+.back-btn::before {
+  content: "←";
+  margin-right: 6px;
+}
+
+/* Micro-interactions & Polish */
+.btn {
+  transform: scale(1);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Password Toggle Icon */
+.password-toggle-btn {
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  color: #6c757d;
+}
+.password-toggle-btn:hover {
+  color: #000;
+}
+
+/* Skeleton Loading Animation */
+@keyframes skeleton-loading {
+  0% {
+    background-color: #e9ecef;
+  }
+  50% {
+    background-color: #f8f9fa;
+  }
+  100% {
+    background-color: #e9ecef;
+  }
+}
+
+.skeleton-box {
+  display: inline-block;
+  height: 1em;
+  position: relative;
+  overflow: hidden;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  animation: skeleton-loading 1.5s infinite ease-in-out;
+}
+
+.skeleton-text {
+  width: 100%;
+  height: 16px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.skeleton-title {
+  width: 60%;
+  height: 24px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+}
+
+.skeleton-button {
+  width: 120px;
+  height: 38px;
+  border-radius: 6px;
+}
+
+/* Blurred Modals */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* File Upload Pill */
+.file-upload-zone {
+  border: 2px dashed #ced4da;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #f8f9fa;
+}
+.file-upload-zone:hover, .file-upload-zone.dragover {
+  border-color: #000;
+  background-color: #fff;
+}
+.file-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+.file-pill-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+}
+.file-pill-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+.file-pill-size {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+.file-pill-remove {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+.file-pill-remove:hover {
+  background-color: #ffe6e6;
+}
+
+/* Override Default Blue for Tabs and Links */
+.nav-link {
+  color: #6c757d !important;
+}
+.nav-link:hover, .nav-link:focus {
+  color: #000000 !important;
+}
+.nav-tabs .nav-link.active {
+  color: #000000 !important;
+  font-weight: 600 !important;
+}
+.nav-pills .nav-link.active {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* Override Default Blue for Dropdowns */
+.dropdown-item:active, .dropdown-item.active {
+  background-color: #212529 !important;
+  color: #ffffff !important;
+}
+.dropdown-item:hover, .dropdown-item:focus {
+  background-color: #f8f9fa !important;
+  color: #000000 !important;
+}
