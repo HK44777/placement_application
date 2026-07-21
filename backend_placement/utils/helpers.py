@@ -50,44 +50,6 @@ def validate_grad_years(years_str: str):
         return False, f'Graduation years must be between {min_year} and {max_year}. Invalid: {invalid}'
 
     return True, None
-
-def save_resume(file: UploadFile, usn: str) -> str:
-    """
-    Save a student resume PDF to the resumes upload folder.
-    Returns the saved filename (not the full path).
-    """
-    timestamp  = datetime.now().strftime('%Y%m%d_%H%M%S')
-    safe_usn   = secure_filename(usn)
-    filename   = f"{safe_usn}_{timestamp}.pdf"
-    folder     = os.path.join(os.getcwd(), 'uploads', 'resumes')
-
-    os.makedirs(folder, exist_ok=True)
-    file_path = os.path.join(folder, filename)
-    
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-        
-    return filename
-
-def save_jd(file: UploadFile, company_id: str) -> str:
-    """
-    Save a job description PDF to the JD upload folder.
-    Returns the saved filename (not the full path).
-    """
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    original  = secure_filename(file.filename)
-    filename  = f"{company_id}_{timestamp}_{original}"
-    folder    = os.path.join(os.getcwd(), 'uploads', 'jd')
-
-    os.makedirs(folder, exist_ok=True)
-    file_path = os.path.join(folder, filename)
-    
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-        
-    return filename
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 # Eligibility helper
 # ─────────────────────────────────────────────────────────────────────────────

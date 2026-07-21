@@ -288,15 +288,44 @@ const handleSubmit = async () => {
     }
   })
   
-  // Append File if exists
-  if (jdFile.value) {
-    formData.append('jd', jdFile.value)
-  }
-
   try {
+    // 1. Get presigned URL for S3 upload
+    if (jdFile.value) {
+      const presignRes = await apiFetch('/files/presigned-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          file_name: jdFile.value.name,
+          file_type: jdFile.value.type || 'application/pdf',
+          folder: 'jd'
+        })
+      })
+
+      if (!presignRes.url) {
+        throw new Error("Failed to get presigned URL for JD upload")
+      }
+
+      // 2. Upload directly to S3
+      const s3Res = await fetch(presignRes.url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': jdFile.value.type || 'application/pdf'
+        },
+        body: jdFile.value
+      })
+
+      if (!s3Res.ok) {
+        throw new Error("Failed to upload JD to S3")
+      }
+
+      // 3. Append the object key instead of the file
+      formData.append('jd_key', presignRes.object_key)
+    }
+
+    // 4. Send the rest of the form to backend
     await apiFetch('/company/drives', {
       method: 'POST',
-      body: formData // Notice we don't set Content-Type header; fetch handles multipart/form-data boundaries automatically
+      body: formData
     })
     
     toast.success('Drive created successfully! Awaiting approval. Redirecting...')

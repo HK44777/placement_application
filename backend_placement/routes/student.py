@@ -14,7 +14,7 @@ from typing import Optional
 from database import get_db, User, Student, PlacementDrive, Application, Company, StudentResume
 from schemas import StudentProfileUpdateSchema
 from utils.auth import require_student
-from utils.helpers import save_resume, allowed_pdf, check_eligibility, format_pydantic_errors
+from utils.helpers import allowed_pdf, check_eligibility, format_pydantic_errors
 from tasks import process_resume_skills
 from utils.scoring import calculate_match_score
 import json
@@ -117,16 +117,14 @@ async def upload_resume(request: Request, user_info: dict = Depends(require_stud
     try:
         form = await request.form()
         name = form.get('name', 'My Resume')
-        resume_file = form.get('resume')
+        resume_key = form.get('resume_key')
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid form data")
         
-    if not resume_file or not hasattr(resume_file, "filename"):
-        raise HTTPException(status_code=400, detail={'error': 'A valid PDF resume is required'})
-    if not allowed_pdf(resume_file.filename):
-        raise HTTPException(status_code=400, detail={'error': 'Only PDF files are allowed'})
+    if not resume_key:
+        raise HTTPException(status_code=400, detail={'error': 'A resume key is required'})
         
-    resume_filename = save_resume(resume_file, student.usn)
+    resume_filename = resume_key
     
     new_resume = StudentResume(
         student_id=student.id,
@@ -186,9 +184,9 @@ async def update_profile(request: Request, user_info: dict = Depends(require_stu
     form = await request.form()
     data = dict(form)
 
-    new_resume = form.get('resume')
+    new_resume = form.get('resume_key')
     if new_resume:
-        data.pop('resume', None)
+        data.pop('resume_key', None)
 
     try:
         validated = StudentProfileUpdateSchema(**data)
@@ -196,10 +194,6 @@ async def update_profile(request: Request, user_info: dict = Depends(require_stu
     except ValidationError as e:
         details.extend(format_pydantic_errors(e.errors()))
         validated_data = data
-
-    if new_resume and hasattr(new_resume, "filename") and new_resume.filename:
-        if not allowed_pdf(new_resume.filename):
-            details.append({'loc': ['resume'], 'msg': 'Resume must be a PDF file'})
 
     if details:
         raise HTTPException(status_code=400, detail={'error': 'Validation failed', 'details': details})
@@ -210,8 +204,8 @@ async def update_profile(request: Request, user_info: dict = Depends(require_stu
     student.active_backlog  = validated_data['active_backlog']
     student.skills          = validated_data.get('skills')
 
-    if new_resume and hasattr(new_resume, "filename") and new_resume.filename:
-        student.resume_path = save_resume(new_resume, student.usn)
+    if new_resume:
+        student.resume_path = new_resume
 
     try:
         db.commit()

@@ -268,11 +268,40 @@ const handleSubmit = async () => {
     }
   })
   
-  if (isFullEdit.value && jdFile.value) {
-    formData.append('jd', jdFile.value)
-  }
-
   try {
+    if (isFullEdit.value && jdFile.value) {
+      // 1. Get presigned URL for S3 upload
+      const presignRes = await apiFetch('/files/presigned-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          file_name: jdFile.value.name,
+          file_type: jdFile.value.type || 'application/pdf',
+          folder: 'jd'
+        })
+      })
+
+      if (!presignRes.url) {
+        throw new Error("Failed to get presigned URL for JD upload")
+      }
+
+      // 2. Upload directly to S3
+      const s3Res = await fetch(presignRes.url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': jdFile.value.type || 'application/pdf'
+        },
+        body: jdFile.value
+      })
+
+      if (!s3Res.ok) {
+        throw new Error("Failed to upload JD to S3")
+      }
+
+      // 3. Append the object key instead of the file
+      formData.append('jd_key', presignRes.object_key)
+    }
+
     await apiFetch(`/company/drives/${driveId}`, {
       method: 'PUT',
       body: formData 

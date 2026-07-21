@@ -263,8 +263,38 @@ const handleRegister = async () => {
     formData.append('backlog_history', form.value.backlogHistory)
     formData.append('active_backlog', form.value.activeBacklog)
     formData.append('skills', form.value.skills)
-    if(form.value.resume) {
-      formData.append('resume', form.value.resume)
+
+    if (form.value.resume) {
+      // 1. Get presigned URL for S3 upload
+      const presignRes = await apiFetch('/files/presigned-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          file_name: form.value.resume.name,
+          file_type: form.value.resume.type || 'application/pdf',
+          folder: 'resumes'
+        })
+      })
+
+      if (!presignRes.url) {
+        throw new Error("Failed to get presigned URL for resume upload")
+      }
+
+      // 2. Upload directly to S3
+      const s3Res = await fetch(presignRes.url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': form.value.resume.type || 'application/pdf'
+        },
+        body: form.value.resume
+      })
+
+      if (!s3Res.ok) {
+        throw new Error("Failed to upload resume to S3")
+      }
+
+      // 3. Append the object key instead of the file
+      formData.append('resume_key', presignRes.object_key)
     }
 
     const data = await apiFetch('/auth/register/student', {

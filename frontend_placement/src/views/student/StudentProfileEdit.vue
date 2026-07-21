@@ -1,9 +1,13 @@
 <template>
-  <div class="container mt-4 d-flex justify-content-center">
+  <div class="container mt-4 mb-5">
     <div v-if="isFetching" class="text-center mt-5">Loading...</div>
-    <div v-else class="card shadow-sm border-0" style="width: 70%;">
-      <div class="card-body p-5">
-        <h5 class="card-title fw-semibold mb-4 text-center">Edit Profile</h5>
+    <div v-else class="row g-4">
+      
+      <!-- Edit Profile Column -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body p-4 p-md-5">
+            <h5 class="card-title fw-semibold mb-4 text-center">Edit Profile</h5>
 
         <form @submit.prevent="handleSave" novalidate>
           <div class="mb-3">
@@ -54,12 +58,15 @@
             Cancel & Back to Profile
           </router-link>
         </div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div v-if="!isFetching" class="card shadow-sm border-0 mt-4 mb-5" style="width: 70%;">
-      <div class="card-body p-5">
-        <h5 class="card-title fw-semibold mb-4 text-center">Manage Resumes</h5>
+      <!-- Manage Resumes Column -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body p-4 p-md-5">
+            <h5 class="card-title fw-semibold mb-4 text-center">Manage Resumes</h5>
         
         <div v-if="isFetchingResumes" class="text-center my-3">
           <div class="spinner-border spinner-border-sm text-dark" role="status"></div>
@@ -76,7 +83,7 @@
                 <div class="small text-muted">Uploaded: {{ new Date(resume.created_at).toLocaleDateString() }}</div>
               </div>
               <div>
-                <a :href="`http://localhost:5000/api/files/resumes/${resume.file_path}?token=${authState.token}`" target="_blank" class="btn btn-sm btn-outline-secondary me-2">View</a>
+                <a :href="`http://localhost:5000/api/files/resume/${resume.file_path}?token=${authState.token}`" target="_blank" class="btn btn-sm btn-outline-secondary me-2">View</a>
                 <button @click="promptDelete(resume.id)" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" :disabled="isDeleting === resume.id">
                   <span v-if="isDeleting === resume.id" class="spinner-border spinner-border-sm" role="status"></span>
                   <span v-else>Delete</span>
@@ -104,6 +111,8 @@
           </div>
         </form>
 
+          </div>
+        </div>
       </div>
     </div>
     
@@ -199,9 +208,38 @@ const fetchResumes = async () => {
 const handleUploadResume = async () => {
   isUploading.value = true
   try {
+    // 1. Get presigned URL from backend
+    const presignRes = await apiFetch('/files/presigned-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        file_name: newResume.value.file.name,
+        file_type: newResume.value.file.type || 'application/pdf',
+        folder: 'resumes'
+      })
+    })
+
+    if (!presignRes.url) {
+      throw new Error("Failed to get presigned URL")
+    }
+
+    // 2. Upload file directly to S3
+    const s3Res = await fetch(presignRes.url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': newResume.value.file.type || 'application/pdf'
+      },
+      body: newResume.value.file
+    })
+
+    if (!s3Res.ok) {
+      throw new Error("Failed to upload to S3")
+    }
+
+    // 3. Send the object key to the backend
     const formData = new FormData()
     formData.append('name', newResume.value.name)
-    formData.append('resume', newResume.value.file)
+    formData.append('resume_key', presignRes.object_key)
 
     await apiFetch('/student/resumes', {
       method: 'POST',

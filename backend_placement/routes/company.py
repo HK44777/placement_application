@@ -21,7 +21,7 @@ from schemas import (
 )
 from utils.auth import require_company
 from utils.helpers import (
-    save_jd, allowed_pdf,
+    allowed_pdf,
     parse_rounds_from_form,
     auto_close_expired_drives,
     validate_grad_years,
@@ -219,7 +219,7 @@ async def create_drive(request: Request, user_info: dict = Depends(require_compa
     details = []
     form = await request.form()
     data = dict(form)
-    jd_file = data.pop('jd', None)
+    jd_key = data.pop('jd_key', None)
 
     try:
         validated = PlacementDriveCreateSchema(**data)
@@ -250,15 +250,13 @@ async def create_drive(request: Request, user_info: dict = Depends(require_compa
     for r_err in round_errors:
         details.append({'loc': ['rounds'], 'msg': r_err})
 
-    if not jd_file or not hasattr(jd_file, "filename"):
-        details.append({'loc': ['jd'], 'msg': 'A valid PDF job description is required'})
-    elif not allowed_pdf(jd_file.filename):
-        details.append({'loc': ['jd'], 'msg': 'Only PDF files are allowed'})
+    if not jd_key:
+        details.append({'loc': ['jd_key'], 'msg': 'A JD key is required'})
 
     if details:
         raise HTTPException(status_code=400, detail={'error': 'Validation failed', 'details': details})
 
-    jd_filename = save_jd(jd_file, company.id)
+    jd_filename = jd_key
 
     try:
         drive = PlacementDrive(
@@ -346,7 +344,7 @@ async def _full_edit(drive, company_id, request: Request, db: Session):
     details = []
     form = await request.form()
     data = dict(form)
-    jd_file = data.pop('jd', None)
+    jd_key = data.pop('jd_key', None)
 
     try:
         validated = PlacementDriveEditSchema(**data)
@@ -379,10 +377,6 @@ async def _full_edit(drive, company_id, request: Request, db: Session):
     for r_err in round_errors:
         details.append({'loc': ['rounds'], 'msg': r_err})
 
-    if jd_file and hasattr(jd_file, "filename") and jd_file.filename:
-        if not allowed_pdf(jd_file.filename):
-            details.append({'loc': ['jd'], 'msg': 'JD must be a PDF file'})
-            
     if details:
         raise HTTPException(status_code=400, detail={'error': 'Validation failed', 'details': details})
 
@@ -396,8 +390,8 @@ async def _full_edit(drive, company_id, request: Request, db: Session):
     if 'allowed_grad_years' in validated_data:      drive.allowed_grad_years      = validated_data['allowed_grad_years']
     if 'skills_required' in validated_data:         drive.skills_required         = validated_data['skills_required']
 
-    if jd_file and hasattr(jd_file, "filename") and jd_file.filename:
-        drive.jd_path = save_jd(jd_file, company_id)
+    if jd_key:
+        drive.jd_path = jd_key
 
     drive.rounds      = ','.join(rounds)
     drive.round_dates = ','.join(round_dates)

@@ -17,7 +17,7 @@ from utils.auth import (
     generate_access_token, generate_refresh_token,
     set_refresh_cookie, require_any_auth, revoke_access_token
 )
-from utils.helpers import save_resume, allowed_pdf, validate_grad_years, format_pydantic_errors
+from utils.helpers import allowed_pdf, validate_grad_years, format_pydantic_errors
 
 auth_bp = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -32,9 +32,9 @@ async def register_student(request: Request, response: Response, db: Session = D
     data = dict(form)
 
     # File upload handling from form
-    resume_file = form.get("resume")
-    if resume_file:
-        data.pop("resume", None)
+    resume_key = form.get("resume_key")
+    if resume_key:
+        data.pop("resume_key", None)
 
     try:
         validated = StudentRegisterSchema(**data)
@@ -63,15 +63,13 @@ async def register_student(request: Request, response: Response, db: Session = D
         if not valid:
             details.append({'loc': ['graduation_year'], 'msg': err})
 
-    if not resume_file or not hasattr(resume_file, "filename"):
-        details.append({'loc': ['resume'], 'msg': 'A valid PDF resume is required'})
-    elif not allowed_pdf(resume_file.filename):
-        details.append({'loc': ['resume'], 'msg': 'Only PDF files are allowed'})
+    if not resume_key:
+        details.append({'loc': ['resume_key'], 'msg': 'A resume key is required'})
 
     if details:
         raise HTTPException(status_code=400, detail={'error': 'Validation failed', 'details': details})
 
-    resume_filename = save_resume(resume_file, usn)
+    resume_filename = resume_key
 
     # Save to DB
     try:
