@@ -1,0 +1,30 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'frontend_placement/**' # Vercel handles frontend, so we don't need to SSH into EC2 when frontend changes
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd placement_application
+            git pull origin main
+            docker compose build --no-cache
+            docker compose down
+            docker compose up -d
+            docker system prune -af
