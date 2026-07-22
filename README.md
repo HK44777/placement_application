@@ -2,6 +2,8 @@
 
 A full-stack campus placement management system that connects **students**, **companies**, and **placement administrators** on a single platform. Students discover and apply for placement drives, companies post and manage them, and admins oversee the entire process — all powered by an AI-driven resume scoring engine.
 
+> **🚀 Live Demo:** [https://placement-application-seven.vercel.app](https://placement-application-seven.vercel.app)
+
 ---
 
 ## 📋 Table of Contents
@@ -17,8 +19,22 @@ A full-stack campus placement management system that connects **students**, **co
 - [Running Locally](#-running-locally)
 - [Deployment Architecture](#-deployment-architecture)
 - [CI/CD Pipeline](#-cicd-pipeline)
-- [Seed Data](#-seed-data)
+- [Seed Data & Test Accounts](#-seed-data--test-accounts)
 - [Default Credentials](#-default-credentials)
+
+---
+
+## 🔑 Quick Login Credentials (Test Accounts)
+
+If you just want to log in and test the live application, use these seeded accounts:
+
+| Role | Email | Password | Notes |
+|---|---|---|---|
+| **Admin** | `admin@admin.com` | `admin123` | Full access to approve companies and view stats |
+| **Student** | `alicesharma@example.com` | `321321321` | Has multiple resumes uploaded to test AI scoring |
+| **Student** | `bobkumar@example.com` | `321321321` | Standard student account |
+| **Company** | `google@example.com` | `321321321` | Already approved. Has open drives posted. |
+| **Company** | `innovatestartup@example.com` | `321321321` | Pending approval (needs Admin to approve first) |
 
 ---
 
