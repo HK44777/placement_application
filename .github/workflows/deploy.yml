@@ -1,31 +1,90 @@
-name: Deploy to EC2
+name: Build, Push & Deploy
 
 on:
   push:
     branches:
       - main
     paths-ignore:
-      - 'frontend_placement/**' # Vercel handles frontend, so we don't need to SSH into EC2 when frontend changes
+      - 'frontend_placement/**' # Vercel handles frontend deploys — no need to touch EC2
+
+env:
+  # Your AWS Account ID + Region + ECR Repo Name
+  # These form the full ECR image URI used in both jobs below
+  ECR_REGISTRY: 070223343756.dkr.ecr.eu-north-1.amazonaws.com
+  ECR_REPOSITORY: placment-backend
+  IMAGE_TAG: latest
 
 jobs:
-  deploy:
+
+  # ─── JOB 1: Runs on GitHub's servers (NOT your EC2) ───────────────────────
+  # This is the heavy lifting job. GitHub provides powerful servers for free.
+  # Previously, docker build ran on EC2 — this was draining all CPU credits
+  # and consuming ~1.7GB of RAM causing the instance to freeze.
+  # Now GitHub builds the image (downloads PyTorch, ML models, installs deps)
+  # and pushes the finished image to ECR. EC2 never has to build again.
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # Authenticate GitHub Actions runner with AWS using your IAM credentials
+      # (stored safely in GitHub Secrets — never hardcoded here)
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Login GitHub's Docker engine to your private ECR registry
+      # This allows docker push to ECR in the next step
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Build the Docker image using your Dockerfile (heavy step — runs on GitHub's CPU, not EC2)
+      # Then push the finished image to your private ECR repository
+      - name: Build and Push Docker Image to ECR
+        run: |
+          docker build -f backend_placement/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  # ─── JOB 2: Runs on YOUR EC2 server (lightweight) ─────────────────────────
+  # EC2 only pulls the already-built image from ECR and restarts containers.
+  # This uses almost zero CPU and ~0 extra RAM — no compilation, no downloading
+  # of PyTorch or ML models. Just a fast image download over AWS private network.
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push # Wait for Job 1 to finish before starting this
+
+    steps:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          command_timeout: 30m
+          command_timeout: 10m # Down from 30m — deployment now finishes in ~2-3 minutes
           script: |
             cd placement_application
             git pull origin main
-            docker compose build
+
+            # Log EC2 into ECR using the AWS CLI credentials set via "aws configure"
+            # This is needed so docker can pull from your private ECR repository
+            aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 070223343756.dkr.ecr.eu-north-1.amazonaws.com/placment-backend
+
+            # Pull the pre-built image from ECR (travels inside AWS private network — very fast)
+            # This replaces "docker compose build" — no compilation happens on EC2 anymore
+            docker compose pull
+
+            # Restart all containers with the new image
             docker compose down
             docker compose up -d
-            docker system prune -af
+
+            # ✅ CHANGED: was "docker system prune -af" which deleted ALL images including
+            # the build cache, forcing a full rebuild every time.
+            # Now using "docker image prune -f" which only removes dangling (orphaned) layers
+            # from OLD builds, keeping the current image intact for fast future pulls.
+            docker image prune -f
